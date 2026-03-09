@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Transaction Network</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loadingScreen">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <h2>Loading Blockchain Network</h2>
+                <p id="loadingStatus">Fetching transactions...</p>
+            </div>
+        </div>
+
+        <!-- Header Controls -->
+        <div class="controls-header">
+            <div class="legend">
+                <h3>Transaction Size</h3>
+                <div class="legend-item"><span class="legend-marker small"></span> Small (&lt; 1)</div>
+                <div class="legend-item"><span class="legend-marker medium"></span> Medium (1–10)</div>
+                <div class="legend-item"><span class="legend-marker large"></span> Large (&gt; 10)</div>
+                <div class="legend-live"><span class="live-indicator">●</span> Live generating</div>
+            </div>
+        </div>
+
+        <!-- 3D Network -->
+        <div id="network" role="application" aria-label="Interactive 3D blockchain network"></div>
+
+        <!-- View Controls -->
+        <div class="view-controls">
+            <button id="rotateBtn">Rotate</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline-container">
+            <label>Timeline <span id="timelineCurrent" class="timeline-current"></span></label>
+            <input type="range" id="timelineRange" min="0" max="100" value="100">
+            <div class="timeline-labels">
+                <span id="timelineStart">—</span>
+                <span id="timelineEnd">—</span>
+            </div>
+            <div class="timeline-stats">
+                <span id="timelineCount"></span>
+            </div>
+        </div>
+
+        <!-- Side Panel -->
+        <div id="sidePanel" class="side-panel" role="dialog" aria-hidden="true">
+            <button id="closePanel" class="close-btn" aria-label="Close panel">✕</button>
+            <div id="panelContent">
+                <h2>Transaction Details</h2>
+                <div class="detail-section">
+                    <div class="detail-row">
+                        <strong>Hash:</strong>
+                        <span id="txHash" class="monospace"></span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>From:</strong>
+                        <span id="txFrom" class="monospace"></span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>To:</strong>
+                        <span id="txTo" class="monospace"></span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Token:</strong>
+                        <span id="txToken"></span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Amount:</strong>
+                        <span id="txAmount"></span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Time:</strong>
+                        <span id="txTime"></span>
+                    </div>
+                </div>
+                <div class="summary-section">
+                    <h3>Transaction Summary</h3>
+                    <p id="txSummary" class="summary-text"></p>
+                </div>
+                <div class="chart-section">
+                    <h3>Fee History</h3>
+                    <div id="feeChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

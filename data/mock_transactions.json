@@ -1,0 +1,747 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-122.4194, 37.7749] },
+      "properties": {
+        "txHash": "0xabc123def456789abcdef0123456789abcdef012",
+        "from": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+        "to": "0x9876543210fedcba9876543210fedcba98765432",
+        "token": "ETH",
+        "amount": 2.5,
+        "feeHistory": [0.001, 0.0009, 0.0012, 0.001],
+        "timestamp": 1702000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.1276, 51.5074] },
+      "properties": {
+        "txHash": "0xdef456789abc123def456789abc123def456789a",
+        "from": "0x123456789abcdef0123456789abcdef012345678",
+        "to": "0xabcdef0123456789abcdef0123456789abcdef01",
+        "token": "USDC",
+        "amount": 1500.75,
+        "feeHistory": [0.0008, 0.0009, 0.0007, 0.0011, 0.0008],
+        "timestamp": 1704000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [139.6917, 35.6895] },
+      "properties": {
+        "txHash": "0x987654321fedcba987654321fedcba9876543210",
+        "from": "0xfedcba9876543210fedcba9876543210fedcba98",
+        "to": "0x0123456789abcdef0123456789abcdef01234567",
+        "token": "BTC",
+        "amount": 0.25,
+        "feeHistory": [0.0015, 0.0013, 0.0014, 0.0016],
+        "timestamp": 1706000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.3522, 48.8566] },
+      "properties": {
+        "txHash": "0x1234abcd5678ef901234abcd5678ef901234abcd",
+        "from": "0xaaaaaa1111112222223333334444445555556666",
+        "to": "0xbbbbbb7777778888889999990000001111112222",
+        "token": "ETH",
+        "amount": 5.8,
+        "feeHistory": [0.0011, 0.001, 0.0012, 0.0009],
+        "timestamp": 1708000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-74.006, 40.7128] },
+      "properties": {
+        "txHash": "0x5678ef901234abcd5678ef901234abcd5678ef90",
+        "from": "0xcccccc3333334444445555556666667777778888",
+        "to": "0xdddddd9999990000001111112222223333334444",
+        "token": "USDT",
+        "amount": 892.45,
+        "feeHistory": [0.0007, 0.0008, 0.0007, 0.0009, 0.0008],
+        "timestamp": 1710000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [13.405, 52.52] },
+      "properties": {
+        "txHash": "0xabcdef1234567890abcdef1234567890abcdef12",
+        "from": "0xeeeeee5555556666667777778888889999990000",
+        "to": "0xffffff1111112222223333334444445555556666",
+        "token": "ETH",
+        "amount": 12.3,
+        "feeHistory": [0.0013, 0.0012, 0.0014, 0.0011],
+        "timestamp": 1712000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [151.2093, -33.8688] },
+      "properties": {
+        "txHash": "0x7890abcdef1234567890abcdef1234567890abcd",
+        "from": "0x111111aaaaaaaaaabbbbbbbbccccccccdddddddd",
+        "to": "0x222222eeeeeeeeffffffffgggggggghhhhhhhhh",
+        "token": "MATIC",
+        "amount": 3500.0,
+        "feeHistory": [0.0005, 0.0006, 0.0005, 0.0007, 0.0006],
+        "timestamp": 1714000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [55.2708, 25.2048] },
+      "properties": {
+        "txHash": "0xfedcba0987654321fedcba0987654321fedcba09",
+        "from": "0x333333iiiiiiiijjjjjjjjkkkkkkkkllllllll",
+        "to": "0x444444mmmmmmmmnnnnnnnnoooooooooooooooo",
+        "token": "ETH",
+        "amount": 45.6,
+        "feeHistory": [0.0016, 0.0015, 0.0017, 0.0014],
+        "timestamp": 1716000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [37.6173, 55.7558] },
+      "properties": {
+        "txHash": "0x456789abcdef0123456789abcdef0123456789ab",
+        "from": "0x555555ppppppppqqqqqqqqrrrrrrrrssssssss",
+        "to": "0x666666tttttttttuuuuuuuuvvvvvvvvwwwwwww",
+        "token": "BNB",
+        "amount": 18.9,
+        "feeHistory": [0.001, 0.0009, 0.0011, 0.001, 0.0012],
+        "timestamp": 1718000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [126.978, 37.5665] },
+      "properties": {
+        "txHash": "0xabcdef7890123456abcdef7890123456abcdef78",
+        "from": "0x777777xxxxxxxxxxyyyyyyyyzzzzzzzzaaaaaaaa",
+        "to": "0x888888bbbbbbbbccccccccddddddddeeeeeeee",
+        "token": "ETH",
+        "amount": 0.75,
+        "feeHistory": [0.0008, 0.0007, 0.0009, 0.0008],
+        "timestamp": 1720000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [121.4737, 31.2304] },
+      "properties": {
+        "txHash": "0x123456fedcba987654321fedcba9876543210fe",
+        "from": "0x999999ffffffffffffgggggggghhhhhhhhiiiiii",
+        "to": "0xaaaaaajjjjjjjjkkkkkkkkllllllllmmmmmmmm",
+        "token": "DAI",
+        "amount": 2400.0,
+        "feeHistory": [0.0006, 0.0007, 0.0006, 0.0008, 0.0007],
+        "timestamp": 1722000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-43.1729, -22.9068] },
+      "properties": {
+        "txHash": "0xfedcba123456789fedcba123456789fedcba1234",
+        "from": "0xbbbbbbnnnnnnnnnooooooooppppppppqqqqqqqq",
+        "to": "0xccccccrrrrrrrrrsssssssstttttttttuuuuuuu",
+        "token": "ETH",
+        "amount": 8.2,
+        "feeHistory": [0.0012, 0.0011, 0.0013, 0.001],
+        "timestamp": 1724000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-99.1332, 19.4326] },
+      "properties": {
+        "txHash": "0x789abcdef0123456789abcdef0123456789abcde",
+        "from": "0xddddddvvvvvvvvwwwwwwwwxxxxxxxxxxyyyyyyy",
+        "to": "0xeeeeeezzzzzzzz111111112222222233333333",
+        "token": "USDC",
+        "amount": 650.3,
+        "feeHistory": [0.0009, 0.0008, 0.001, 0.0009],
+        "timestamp": 1726000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [103.8198, 1.3521] },
+      "properties": {
+        "txHash": "0xabc123fed456cba789def012345678901234abcd",
+        "from": "0xffffff444444445555555566666666777777778",
+        "to": "0x000000888888889999999900000000aaaaaaaa",
+        "token": "ETH",
+        "amount": 32.1,
+        "feeHistory": [0.0014, 0.0013, 0.0015, 0.0012, 0.0014],
+        "timestamp": 1728000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [77.2090, 28.6139] },
+      "properties": {
+        "txHash": "0x456def789abc123def456789abc123def456789a",
+        "from": "0x111111bbbbbbbbccccccccddddddddeeeeeeee",
+        "to": "0x222222ffffffffffgggggggghhhhhhhhiiiiiiii",
+        "token": "SOL",
+        "amount": 125.5,
+        "feeHistory": [0.0004, 0.0005, 0.0004, 0.0006],
+        "timestamp": 1730000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [18.4241, -33.9249] },
+      "properties": {
+        "txHash": "0x987cba654fed321987cba654fed321987cba654f",
+        "from": "0x333333jjjjjjjjkkkkkkkkllllllllmmmmmmmm",
+        "to": "0x444444nnnnnnnnoooooooooppppppppqqqqqqqq",
+        "token": "ETH",
+        "amount": 0.15,
+        "feeHistory": [0.0007, 0.0008, 0.0007, 0.0009],
+        "timestamp": 1732000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [31.2357, 30.0444] },
+      "properties": {
+        "txHash": "0xdef123abc456def789abc123def456789abcdef1",
+        "from": "0x555555rrrrrrrrssssssssttttttttuuuuuuuu",
+        "to": "0x666666vvvvvvvvwwwwwwwwxxxxxxxxyyyyyyy",
+        "token": "USDT",
+        "amount": 1200.0,
+        "feeHistory": [0.001, 0.0009, 0.0011, 0.001, 0.0012],
+        "timestamp": 1734000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-3.7038, 40.4168] },
+      "properties": {
+        "txHash": "0x741852963fedcba741852963fedcba7418529630",
+        "from": "0x777777zzzzzzzz000000001111111122222222",
+        "to": "0x888888333333334444444455555555666666666",
+        "token": "ETH",
+        "amount": 6.9,
+        "feeHistory": [0.0011, 0.001, 0.0012, 0.0009],
+        "timestamp": 1738000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [114.1095, 22.3964] },
+      "properties": {
+        "txHash": "0x369258147fedcba369258147fedcba3692581470",
+        "from": "0x999999777777778888888899999999000000000",
+        "to": "0xaaaaaaaaaaaaabbbbbbbbccccccccdddddddd",
+        "token": "LINK",
+        "amount": 850.0,
+        "feeHistory": [0.0008, 0.0007, 0.0009, 0.0008, 0.0007],
+        "timestamp": 1742000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [12.4964, 41.9028] },
+      "properties": {
+        "txHash": "0xabc987fed654cba321fed987654321fedcba987",
+        "from": "0xbbbbbbeeeeeeeeffffffffgggggggghhhhhhhh",
+        "to": "0xcccccciiiiiiiijjjjjjjjkkkkkkkkllllllll",
+        "token": "ETH",
+        "amount": 15.7,
+        "feeHistory": [0.0013, 0.0012, 0.0014, 0.0011],
+        "timestamp": 1746000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [144.9631, -37.8136] },
+      "properties": {
+        "txHash": "0x147258369fedcba147258369fedcba1472583690",
+        "from": "0xddddddmmmmmmmmnnnnnnnnooooooooopppppppp",
+        "to": "0xeeeeeeqqqqqqqqrrrrrrrrsssssssstttttttt",
+        "token": "AVAX",
+        "amount": 45.0,
+        "feeHistory": [0.0006, 0.0007, 0.0006, 0.0008],
+        "timestamp": 1750000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [106.8456, 10.8231] },
+      "properties": {
+        "txHash": "0xfed159753fedcba159753fedcba1597530fedcb",
+        "from": "0xffffffuuuuuuuuvvvvvvvvwwwwwwwwxxxxxxxx",
+        "to": "0x000000yyyyyyyyyzzzzzzzzz1111111122222222",
+        "token": "ETH",
+        "amount": 0.45,
+        "feeHistory": [0.0009, 0.0008, 0.001, 0.0009],
+        "timestamp": 1754000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [174.7633, -36.8485] },
+      "properties": {
+        "txHash": "0x258369147fedcba258369147fedcba2583691470",
+        "from": "0x111111333333334444444455555555666666666",
+        "to": "0x222222777777778888888899999999000000000",
+        "token": "DOGE",
+        "amount": 15000.0,
+        "feeHistory": [0.0003, 0.0004, 0.0003, 0.0005, 0.0004],
+        "timestamp": 1758000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-47.9292, -15.8267] },
+      "properties": {
+        "txHash": "0x963852741fedcba963852741fedcba9638527410",
+        "from": "0x333333aaaaaaabbbbbbbbccccccccdddddddd",
+        "to": "0x444444eeeeeeeeffffffffgggggggghhhhhhhh",
+        "token": "ETH",
+        "amount": 25.8,
+        "feeHistory": [0.0015, 0.0014, 0.0016, 0.0013],
+        "timestamp": 1762000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [100.5018, 13.7563] },
+      "properties": {
+        "txHash": "0x852741963fedcba852741963fedcba8527419630",
+        "from": "0x555555iiiiiiiijjjjjjjjkkkkkkkkllllllll",
+        "to": "0x666666mmmmmmmmnnnnnnnnooooooooopppppppp",
+        "token": "XRP",
+        "amount": 5000.0,
+        "feeHistory": [0.0002, 0.0003, 0.0002, 0.0004],
+        "timestamp": 1764000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-123.1207, 49.2827] },
+      "properties": {
+        "txHash": "0x159357486fedcba159357486fedcba1593574860",
+        "from": "0x777777qqqqqqqqrrrrrrrrsssssssstttttttt",
+        "to": "0x888888uuuuuuuuvvvvvvvvwwwwwwwwxxxxxxxx",
+        "token": "ETH",
+        "amount": 3.3,
+        "feeHistory": [0.001, 0.0011, 0.001, 0.0012],
+        "timestamp": 1766000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [10.7522, 59.9139] },
+      "properties": {
+        "txHash": "0x753951864fedcba753951864fedcba7539518640",
+        "from": "0x999999yyyyyyyyyzzzzzzzzz000000001111111",
+        "to": "0xaaaaaa222222223333333344444444555555555",
+        "token": "ADA",
+        "amount": 8000.0,
+        "feeHistory": [0.0005, 0.0004, 0.0006, 0.0005, 0.0007],
+        "timestamp": 1764000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-74.0060, 40.7128] },
+      "properties": {
+        "txHash": "0xadd100001111222233334444555566667777888",
+        "from": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+        "to": "0xbbbbbbccccccddddddeeeeeeffffffffaaaaaa",
+        "token": "ETH",
+        "amount": 1.2,
+        "feeHistory": [0.002, 0.0018, 0.0022],
+        "timestamp": 1705000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [139.6917, 35.6895] },
+      "properties": {
+        "txHash": "0xadd200002222333344445555666677778888999",
+        "from": "0x111111222222333333444444555555666666777",
+        "to": "0x9876543210fedcba9876543210fedcba98765432",
+        "token": "BTC",
+        "amount": 0.08,
+        "feeHistory": [0.0005, 0.0006],
+        "timestamp": 1707000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.3522, 48.8566] },
+      "properties": {
+        "txHash": "0xadd300003333444455556666777788889999aaa",
+        "from": "0x22222233333334444444555555666666677777",
+        "to": "0x333333344444445555555566666666777777",
+        "token": "USDT",
+        "amount": 5000.0,
+        "feeHistory": [0.001, 0.0009, 0.0011],
+        "timestamp": 1709000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.1276, 51.5074] },
+      "properties": {
+        "txHash": "0xadd400004444555566667777888899990000bbb",
+        "from": "0x9876543210fedcba9876543210fedcba98765432",
+        "to": "0x444444555555666666777777888888999999000",
+        "token": "ETH",
+        "amount": 3.7,
+        "feeHistory": [0.0015, 0.0014, 0.0016],
+        "timestamp": 1711000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [151.2093, -33.8688] },
+      "properties": {
+        "txHash": "0xadd500005555666677778888999900001111ccc",
+        "from": "0x55555566666667777777888888899999900000",
+        "to": "0x111111222222333333444444555555666666777",
+        "token": "BNB",
+        "amount": 15.5,
+        "feeHistory": [0.0002, 0.0003, 0.0002],
+        "timestamp": 1713000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [55.2708, 25.2048] },
+      "properties": {
+        "txHash": "0xadd600006666777788889999000011112222ddd",
+        "from": "0x666666777777888888999999000000111111",
+        "to": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+        "token": "ETH",
+        "amount": 0.95,
+        "feeHistory": [0.0012, 0.0011, 0.0013],
+        "timestamp": 1715000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [37.6173, 55.7558] },
+      "properties": {
+        "txHash": "0xadd700007777888899990000111122223333eee",
+        "from": "0x333333344444445555555566666666777777",
+        "to": "0x777777888888999999000000111111222222",
+        "token": "SOL",
+        "amount": 125.0,
+        "feeHistory": [0.00001, 0.00002, 0.00001],
+        "timestamp": 1717000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [126.9780, 37.5665] },
+      "properties": {
+        "txHash": "0xadd800008888999900001111222233334444fff",
+        "from": "0x9876543210fedcba9876543210fedcba98765432",
+        "to": "0x888888999999000000111111222222333333",
+        "token": "MATIC",
+        "amount": 2500.0,
+        "feeHistory": [0.0003, 0.0004, 0.0003],
+        "timestamp": 1719000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [121.4737, 31.2304] },
+      "properties": {
+        "txHash": "0xadd900009999000011112222333344445555ggg",
+        "from": "0x111111222222333333444444555555666666777",
+        "to": "0x999999000000111111222222333333444444",
+        "token": "ETH",
+        "amount": 6.3,
+        "feeHistory": [0.0018, 0.0019, 0.0017],
+        "timestamp": 1721000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-43.1729, -22.9068] },
+      "properties": {
+        "txHash": "0xadd1000100001111222233334444555566667hhh",
+        "from": "0x55555566666667777777888888899999900000",
+        "to": "0x000000111111222222333333444444555555",
+        "token": "USDC",
+        "amount": 8500.0,
+        "feeHistory": [0.001, 0.0012, 0.001],
+        "timestamp": 1723000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-99.1332, 19.4326] },
+      "properties": {
+        "txHash": "0xadd1100111112222333344445555666677778iii",
+        "from": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+        "to": "0x111111000000222222333333444444555555",
+        "token": "BTC",
+        "amount": 0.15,
+        "feeHistory": [0.0008, 0.0007, 0.0009],
+        "timestamp": 1725000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [103.8198, 1.3521] },
+      "properties": {
+        "txHash": "0xadd1200122223333444455556666777788889jjj",
+        "from": "0x333333344444445555555566666666777777",
+        "to": "0x222222111111333333444444555555666666",
+        "token": "ETH",
+        "amount": 4.1,
+        "feeHistory": [0.0016, 0.0015, 0.0017],
+        "timestamp": 1727000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [77.2090, 28.6139] },
+      "properties": {
+        "txHash": "0xadd1300133334444555566667777888899990kkk",
+        "from": "0x9876543210fedcba9876543210fedcba98765432",
+        "to": "0x333333222222444444555555666666777777",
+        "token": "DOT",
+        "amount": 450.0,
+        "feeHistory": [0.0004, 0.0005, 0.0004],
+        "timestamp": 1729000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [18.4241, -33.9249] },
+      "properties": {
+        "txHash": "0xadd1400144445555666677778888999900001lll",
+        "from": "0x111111222222333333444444555555666666777",
+        "to": "0x444444333333555555666666777777888888",
+        "token": "AVAX",
+        "amount": 75.0,
+        "feeHistory": [0.0003, 0.0004, 0.0003],
+        "timestamp": 1731000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [31.2357, 30.0444] },
+      "properties": {
+        "txHash": "0xadd1500155556666777788889999000011112mmm",
+        "from": "0x55555566666667777777888888899999900000",
+        "to": "0x555555444444666666777777888888999999",
+        "token": "ETH",
+        "amount": 2.8,
+        "feeHistory": [0.0014, 0.0013, 0.0015],
+        "timestamp": 1733000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-3.7038, 40.4168] },
+      "properties": {
+        "txHash": "0xadd1600166667777888899990000111122223nnn",
+        "from": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+        "to": "0x666666555555777777888888999999000000",
+        "token": "LINK",
+        "amount": 350.0,
+        "feeHistory": [0.0005, 0.0006, 0.0005],
+        "timestamp": 1736000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [114.1095, 22.3964] },
+      "properties": {
+        "txHash": "0xadd1700177778888999900001111222233334ooo",
+        "from": "0x333333344444445555555566666666777777",
+        "to": "0x777777666666888888999999000000111111",
+        "token": "UNI",
+        "amount": 180.0,
+        "feeHistory": [0.0006, 0.0007, 0.0006],
+        "timestamp": 1740000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [12.4964, 41.9028] },
+      "properties": {
+        "txHash": "0xadd1800188889999000011112222333344445ppp",
+        "from": "0x9876543210fedcba9876543210fedcba98765432",
+        "to": "0x888888777777999999000000111111222222",
+        "token": "ETH",
+        "amount": 5.6,
+        "feeHistory": [0.0019, 0.002, 0.0018],
+        "timestamp": 1744000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [144.9631, -37.8136] },
+      "properties": {
+        "txHash": "0xadd1900199990000111122223333444455556qqq",
+        "from": "0x111111222222333333444444555555666666777",
+        "to": "0x999999888888000000111111222222333333",
+        "token": "ATOM",
+        "amount": 290.0,
+        "feeHistory": [0.0004, 0.0005, 0.0004],
+        "timestamp": 1748000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [106.6297, 10.8231] },
+      "properties": {
+        "txHash": "0xadd2000200001111222233334444555566667rrr",
+        "from": "0x55555566666667777777888888899999900000",
+        "to": "0x000000999999111111222222333333444444",
+        "token": "FTM",
+        "amount": 1200.0,
+        "feeHistory": [0.0002, 0.0003, 0.0002],
+        "timestamp": 1752000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [174.7633, -36.8485] },
+      "properties": {
+        "txHash": "0xadd2100211112222333344445555666677778sss",
+        "from": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+        "to": "0x111111000000222222333333444444555555",
+        "token": "ETH",
+        "amount": 1.9,
+        "feeHistory": [0.0013, 0.0012, 0.0014],
+        "timestamp": 1756000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-47.8825, -15.7942] },
+      "properties": {
+        "txHash": "0xadd2200222223333444455556666777788889ttt",
+        "from": "0x333333344444445555555566666666777777",
+        "to": "0x222222000000333333444444555555666666",
+        "token": "ALGO",
+        "amount": 3500.0,
+        "feeHistory": [0.0001, 0.0002, 0.0001],
+        "timestamp": 1760000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [100.5018, 13.7563] },
+      "properties": {
+        "txHash": "0xadd2300233334444555566667777888899990uuu",
+        "from": "0x9876543210fedcba9876543210fedcba98765432",
+        "to": "0x333333111111444444555555666666777777",
+        "token": "XRP",
+        "amount": 7500.0,
+        "feeHistory": [0.00001, 0.00001, 0.00002],
+        "timestamp": 1763000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-123.1207, 49.2827] },
+      "properties": {
+        "txHash": "0xadd2400244445555666677778888999900001vvv",
+        "from": "0x111111222222333333444444555555666666777",
+        "to": "0x444444222222555555666666777777888888",
+        "token": "ETH",
+        "amount": 7.2,
+        "feeHistory": [0.0021, 0.002, 0.0022],
+        "timestamp": 1761000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [18.0686, 59.3293] },
+      "properties": {
+        "txHash": "0xadd2500255556666777788889999000011112www",
+        "from": "0x55555566666667777777888888899999900000",
+        "to": "0x555555333333666666777777888888999999",
+        "token": "LTC",
+        "amount": 18.5,
+        "feeHistory": [0.0003, 0.0004, 0.0003],
+        "timestamp": 1765000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-79.3832, 43.6532] },
+      "properties": {
+        "txHash": "0xadd2600266667777888899990000111122223xxx",
+        "from": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+        "to": "0x666666444444777777888888999999000000",
+        "token": "ETH",
+        "amount": 3.3,
+        "feeHistory": [0.0015, 0.0016, 0.0014],
+        "timestamp": 1766000000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [4.8952, 52.3702] },
+      "properties": {
+        "txHash": "0xadd2700277778888999900001111222233334yyy",
+        "from": "0x333333344444445555555566666666777777",
+        "to": "0x777777555555888888999999000000111111",
+        "token": "DAI",
+        "amount": 6200.0,
+        "feeHistory": [0.001, 0.0011, 0.001],
+        "timestamp": 1766500000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [13.4050, 52.5200] },
+      "properties": {
+        "txHash": "0xadd2800288889999000011112222333344445zzz",
+        "from": "0x9876543210fedcba9876543210fedcba98765432",
+        "to": "0x888888666666999999000000111111222222",
+        "token": "ETH",
+        "amount": 4.8,
+        "feeHistory": [0.0017, 0.0018, 0.0016],
+        "timestamp": 1766700000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [21.0122, 52.2297] },
+      "properties": {
+        "txHash": "0xadd2900299990000111122223333444455556aaa",
+        "from": "0x111111222222333333444444555555666666777",
+        "to": "0x999999777777000000111111222222333333",
+        "token": "SHIB",
+        "amount": 50000000.0,
+        "feeHistory": [0.0005, 0.0006, 0.0005],
+        "timestamp": 1766900000000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [11.5820, 48.1351] },
+      "properties": {
+        "txHash": "0xadd3000300001111222233334444555566667bbb",
+        "from": "0x55555566666667777777888888899999900000",
+        "to": "0x000000888888111111222222333333444444",
+        "token": "ETH",
+        "amount": 2.1,
+        "feeHistory": [0.0013, 0.0014, 0.0013],
+        "timestamp": 1767000000000
+      }
+    }
+  ]
+}
+
