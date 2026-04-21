@@ -37,6 +37,13 @@ const TOKENS = ['BTC', 'ETH', 'USDC', 'USDT', 'SOL', 'MATIC', 'BNB', 'DOGE', 'AD
 let addressPool = [];
 
 // ============================================================================
+// Anomaly Detection Engine — global state
+// ============================================================================
+let anomalyScores = new Map(); // address -> { score, flags }
+let anomalyAlerts = [];
+let riskRingGroup = null;
+
+// ============================================================================
 // Initialization
 // ============================================================================
 
@@ -261,6 +268,7 @@ function buildNetwork() {
     createNodeMeshes();
     createLinkLines();
     updateTimelineLabels();
+    detectAnomalies();
 }
 
 function clearNetwork() {
@@ -497,6 +505,7 @@ function animate() {
     }
 
     updateParticles();
+    updateRiskRings();
 
     // Random particles on existing links
     if (frame % 90 === 0 && linkObjects.length > 0) {
@@ -590,6 +599,22 @@ function openNodePanel(node) {
     document.getElementById('txTime').textContent = formatTimestamp(p.timestamp);
     document.getElementById('txSummary').textContent = generateSummary(p);
     renderFeeChart(p.feeHistory);
+
+    // Risk score
+    const risk = anomalyScores.get(node.id) || { score: 0, flags: [] };
+    const riskEl = document.getElementById('txRiskScore');
+    const riskLabelEl = document.getElementById('txRiskLabel');
+    const riskFlagsEl = document.getElementById('txRiskFlags');
+    if (riskEl) riskEl.textContent = risk.score + '/100';
+    if (riskLabelEl) {
+        riskLabelEl.textContent = getRiskLabel(risk.score);
+        riskLabelEl.className = 'risk-label risk-' + (risk.score >= 70 ? 'high' : risk.score >= 40 ? 'med' : risk.score >= 20 ? 'low' : 'safe');
+    }
+    if (riskFlagsEl) {
+        riskFlagsEl.innerHTML = risk.flags.length
+            ? risk.flags.map(f => '<li>' + f + '</li>').join('')
+            : '<li>No suspicious indicators found</li>';
+    }
 
     const panel = document.getElementById('sidePanel');
     panel.classList.add('open');
@@ -730,6 +755,10 @@ function updateTimelineLabels() {
 
 function setupEventListeners() {
     document.getElementById('closePanel').addEventListener('click', closeTransactionPanel);
+    const anomalyBtn = document.getElementById('anomalyBtn');
+    if (anomalyBtn) anomalyBtn.addEventListener('click', toggleAnomalyPanel);
+    const closeAnomalyBtn = document.getElementById('closeAnomalyPanel');
+    if (closeAnomalyBtn) closeAnomalyBtn.addEventListener('click', toggleAnomalyPanel);
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTransactionPanel(); });
 
     document.getElementById('timelineRange').addEventListener('input', e => {
@@ -781,6 +810,177 @@ function formatTimestamp(ts) {
     return new Date(ts).toLocaleString('en-US', {
         year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
     });
+}
+
+// ============================================================================
+// Anomaly Detection Engine
+// ============================================================================
+
+function detectAnomalies() {
+    anomalyScores.clear();
+    anomalyAlerts = [];
+    if (allTransactions.length === 0) { updateAnomalyUI(); return; }
+
+    // Compute mean & std dev of amounts for outlier detection
+    const amounts = allTransactions.map(tx => tx.properties.amount);
+    const mean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
+    const variance = amounts.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / amounts.length;
+    const stdDev = Math.sqrt(variance);
+    const outlierThreshold = mean + 2 * stdDev;
+
+    // Build per-address stats
+    const addressStats = new Map();
+    const addressTimestamps = new Map(); // for rapid-fire detection
+
+    allTransactions.forEach(tx => {
+        const p = tx.properties;
+        [p.from, p.to].forEach(addr => {
+            if (!addressStats.has(addr)) {
+                addressStats.set(addr, { txCount: 0, sentCount: 0, receivedCount: 0, totalAmount: 0, partners: new Set() });
+            }
+            const s = addressStats.get(addr);
+            s.txCount++;
+            s.totalAmount += p.amount;
+        });
+        addressStats.get(p.from).sentCount++;
+        addressStats.get(p.to).receivedCount++;
+        addressStats.get(p.from).partners.add(p.to);
+        addressStats.get(p.to).partners.add(p.from);
+
+        if (!addressTimestamps.has(p.from)) addressTimestamps.set(p.from, []);
+        addressTimestamps.get(p.from).push(p.timestamp);
+    });
+
+    // Build tx-pair set for circular trading detection
+    const txPairs = new Set();
+    allTransactions.forEach(tx => txPairs.add(tx.properties.from + '→' + tx.properties.to));
+
+    // Score each address
+    addressStats.forEach((stats, addr) => {
+        let score = 0;
+        const flags = [];
+
+        // Rule 1: High-frequency (bot-like behaviour)
+        if (stats.txCount >= 10) {
+            score += 35; flags.push('Bot-like activity: ' + stats.txCount + ' transactions');
+        } else if (stats.txCount >= 6) {
+            score += 20; flags.push('Elevated activity: ' + stats.txCount + ' transactions');
+        }
+
+        // Rule 2: Circular / wash trading (A→B AND B→A)
+        let circularCount = 0;
+        stats.partners.forEach(partner => {
+            if (txPairs.has(addr + '→' + partner) && txPairs.has(partner + '→' + addr)) circularCount++;
+        });
+        if (circularCount > 0) {
+            score += 30;
+            flags.push('Circular trading with ' + circularCount + ' wallet' + (circularCount > 1 ? 's' : ''));
+        }
+
+        // Rule 3: Rapid-fire transactions (multiple sends within 60 s)
+        const timestamps = addressTimestamps.get(addr) || [];
+        if (timestamps.length >= 2) {
+            const sorted = [...timestamps].sort((a, b) => a - b);
+            let rapidCount = 0;
+            for (let i = 1; i < sorted.length; i++) {
+                if (sorted[i] - sorted[i - 1] < 60000) rapidCount++;
+            }
+            if (rapidCount >= 2) { score += 20; flags.push('Rapid-fire sends detected'); }
+        }
+
+        anomalyScores.set(addr, { score: Math.min(score, 100), flags });
+    });
+
+    // Rule 4: Outlier transaction amounts — add to sender's score
+    allTransactions.forEach(tx => {
+        const p = tx.properties;
+        if (p.amount > outlierThreshold) {
+            const d = anomalyScores.get(p.from);
+            if (d) {
+                d.score = Math.min(d.score + 25, 100);
+                d.flags.push('Outlier transfer: ' + p.amount.toFixed(2) + ' ' + p.token + ' (avg ' + mean.toFixed(2) + ')');
+            }
+        }
+    });
+
+    // Build sorted alert list (top 10 flagged)
+    anomalyAlerts = Array.from(anomalyScores.entries())
+        .filter(([, d]) => d.score >= 20)
+        .sort(([, a], [, b]) => b.score - a.score)
+        .slice(0, 10)
+        .map(([addr, d]) => ({ addr, score: d.score, flags: d.flags }));
+
+    updateAnomalyUI();
+    addRiskRings();
+}
+
+function getRiskColor(score) {
+    if (score >= 70) return 0xef4444;   // red — high risk
+    if (score >= 40) return 0xf97316;   // orange — suspicious
+    if (score >= 20) return 0xfbbf24;   // yellow — watch
+    return 0x10b981;                    // green — safe
+}
+
+function getRiskLabel(score) {
+    if (score >= 70) return 'HIGH RISK';
+    if (score >= 40) return 'SUSPICIOUS';
+    if (score >= 20) return 'WATCH';
+    return 'SAFE';
+}
+
+function addRiskRings() {
+    // Remove previous rings
+    if (riskRingGroup) { scene.remove(riskRingGroup); riskRingGroup = null; }
+    riskRingGroup = new THREE.Group();
+    riskRingGroup.name = 'riskRings';
+
+    nodes.forEach(node => {
+        const d = anomalyScores.get(node.id);
+        if (!d || d.score < 20) return;
+        const mesh = nodeObjects.get(node.id);
+        if (!mesh) return;
+        const r = (mesh.geometry.parameters.radius || 8) + 6;
+        const geo = new THREE.RingGeometry(r, r + 5, 32);
+        const mat = new THREE.MeshBasicMaterial({ color: getRiskColor(d.score), side: THREE.DoubleSide, transparent: true, opacity: 0.85 });
+        const ring = new THREE.Mesh(geo, mat);
+        ring.position.copy(mesh.position);
+        ring.userData = { isRisk: true };
+        riskRingGroup.add(ring);
+    });
+    scene.add(riskRingGroup);
+}
+
+function updateAnomalyUI() {
+    const count = anomalyAlerts.length;
+    const badge = document.getElementById('anomalyBadge');
+    if (badge) { badge.textContent = count; badge.style.display = count > 0 ? 'inline-flex' : 'none'; }
+
+    const list = document.getElementById('anomalyList');
+    if (!list) return;
+    if (count === 0) {
+        list.innerHTML = '<p class="no-alerts">✅ No suspicious activity detected</p>';
+        return;
+    }
+    list.innerHTML = anomalyAlerts.map(a => `
+        <div class="alert-item risk-${a.score >= 70 ? 'high' : a.score >= 40 ? 'med' : 'low'}">
+            <div class="alert-top">
+                <span class="risk-tag">${getRiskLabel(a.score)}</span>
+                <span class="risk-num">${a.score}/100</span>
+            </div>
+            <div class="alert-addr">${shortenAddress(a.addr)}</div>
+            <ul class="alert-flags">${a.flags.map(f => '<li>' + f + '</li>').join('')}</ul>
+        </div>`).join('');
+}
+
+function toggleAnomalyPanel() {
+    const p = document.getElementById('anomalyPanel');
+    if (p) p.classList.toggle('open');
+}
+
+// Keep risk rings facing the camera each frame
+function updateRiskRings() {
+    if (!riskRingGroup) return;
+    riskRingGroup.children.forEach(ring => ring.lookAt(camera.position));
 }
 
 console.log('%c🌐 Blockchain Transaction Network', 'color: #3b82f6; font-size: 16px; font-weight: bold;');

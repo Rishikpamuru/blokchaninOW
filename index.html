@@ -26,6 +26,28 @@
                 <div class="legend-item"><span class="legend-marker large"></span> Large (&gt; 10)</div>
                 <div class="legend-live"><span class="live-indicator">●</span> Live generating</div>
             </div>
+            <!-- Anomaly Alert Button -->
+            <button id="anomalyBtn" class="anomaly-btn" aria-label="View anomaly report">
+                🛡 Anomaly Report
+                <span id="anomalyBadge" class="anomaly-badge" style="display:none">0</span>
+            </button>
+        </div>
+
+        <!-- Anomaly Panel -->
+        <div id="anomalyPanel" class="anomaly-panel" role="dialog" aria-label="Anomaly detection report">
+            <div class="anomaly-header">
+                <h2>🛡 Security Intelligence</h2>
+                <button id="closeAnomalyPanel" class="close-btn" aria-label="Close">✕</button>
+            </div>
+            <p class="anomaly-subtitle">Flagged wallets based on pattern analysis</p>
+            <div id="anomalyList" class="anomaly-list">
+                <p class="no-alerts">Analyzing transactions...</p>
+            </div>
+            <div class="anomaly-legend">
+                <span class="risk-dot high"></span> HIGH RISK ≥70
+                <span class="risk-dot med"></span> SUSPICIOUS ≥40
+                <span class="risk-dot low"></span> WATCH ≥20
+            </div>
         </div>
 
         <!-- 3D Network -->
@@ -88,6 +110,15 @@
                 <div class="chart-section">
                     <h3>Fee History</h3>
                     <div id="feeChart"></div>
+                </div>
+                <div class="risk-section">
+                    <h3>Risk Assessment</h3>
+                    <div class="risk-row">
+                        <strong>Score:</strong>
+                        <span id="txRiskScore">—</span>
+                        <span id="txRiskLabel" class="risk-label risk-safe">SAFE</span>
+                    </div>
+                    <ul id="txRiskFlags" class="risk-flags"></ul>
                 </div>
             </div>
         </div>
