@@ -34,7 +34,11 @@ let previousCameraPos = null;
 
 // Token & address pools for random generation
 const TOKENS = ['BTC', 'ETH', 'USDC', 'USDT', 'SOL', 'MATIC', 'BNB', 'DOGE', 'ADA', 'LINK', 'AVAX', 'XRP', 'DAI'];
+// Weighted token distribution — stablecoins and ETH dominate real volume
+const TOKEN_WEIGHTS = [4, 18, 22, 20, 8, 5, 6, 3, 3, 3, 3, 3, 7];
 let addressPool = [];
+// Top of pool = "hub" addresses (exchanges, DeFi protocols) — grow naturally
+const HUB_POOL_FRACTION = 0.12;
 
 // ============================================================================
 // Anomaly Detection Engine — global state
@@ -166,42 +170,97 @@ function randomHex(len) {
     return s;
 }
 
-function createRandomTransaction() {
-    // Reuse existing addresses 70% of the time, create new ones 30%
-    let from, to;
-    if (addressPool.length > 2 && Math.random() < 0.7) {
-        from = addressPool[Math.floor(Math.random() * addressPool.length)];
-    } else {
-        from = '0x' + randomHex(40);
-        addressPool.push(from);
-    }
-    if (addressPool.length > 2 && Math.random() < 0.7) {
-        to = addressPool[Math.floor(Math.random() * addressPool.length)];
-    } else {
-        to = '0x' + randomHex(40);
-        addressPool.push(to);
-    }
-    // Ensure from !== to
-    if (from === to) {
-        to = '0x' + randomHex(40);
-        addressPool.push(to);
-    }
+// Box-Muller log-normal sample
+function logNormal(mu, sigma) {
+    const u1 = Math.random() || 1e-10, u2 = Math.random();
+    const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+    return Math.exp(mu + sigma * z);
+}
 
-    const token = TOKENS[Math.floor(Math.random() * TOKENS.length)];
-    const amount = parseFloat((Math.random() * 50).toFixed(4));
-    const feeCount = 2 + Math.floor(Math.random() * 4);
-    const feeHistory = Array.from({ length: feeCount }, () => parseFloat((Math.random() * 0.002).toFixed(6)));
+function weightedToken() {
+    const total = TOKEN_WEIGHTS.reduce((a, b) => a + b, 0);
+    let r = Math.random() * total;
+    for (let i = 0; i < TOKENS.length; i++) {
+        r -= TOKEN_WEIGHTS[i];
+        if (r <= 0) return TOKENS[i];
+    }
+    return TOKENS[TOKENS.length - 1];
+}
+
+// Realistic per-token amount distributions (log-normal params tuned to real-world medians)
+function realisticAmount(token) {
+    const cfg = {
+        BTC:  { mu: -2.3, sigma: 1.4, min: 0.00001, max: 15,     dp: 6 },
+        ETH:  { mu: -0.7, sigma: 1.5, min: 0.0005,  max: 200,    dp: 4 },
+        USDC: { mu:  6.5, sigma: 1.6, min: 10,       max: 500000, round: 10, dp: 2 },
+        USDT: { mu:  6.5, sigma: 1.6, min: 10,       max: 500000, round: 10, dp: 2 },
+        DAI:  { mu:  6.2, sigma: 1.5, min: 10,       max: 200000, round: 10, dp: 2 },
+        BNB:  { mu:  0.3, sigma: 1.3, min: 0.005,    max: 800,    dp: 4 },
+        SOL:  { mu:  1.2, sigma: 1.4, min: 0.05,     max: 5000,   dp: 3 },
+        MATIC:{ mu:  4.5, sigma: 1.6, min: 1,        max: 500000, dp: 1 },
+        DOGE: { mu:  5.0, sigma: 1.7, min: 10,       max: 2000000,dp: 0 },
+        ADA:  { mu:  4.0, sigma: 1.5, min: 1,        max: 200000, dp: 1 },
+        LINK: { mu:  1.8, sigma: 1.3, min: 0.1,      max: 20000,  dp: 2 },
+        AVAX: { mu:  0.4, sigma: 1.3, min: 0.01,     max: 2000,   dp: 3 },
+        XRP:  { mu:  3.5, sigma: 1.5, min: 0.1,      max: 100000, dp: 2 },
+    };
+    const r = cfg[token] || { mu: 1, sigma: 1.2, min: 0.01, max: 1000, dp: 4 };
+    let val = Math.min(Math.max(logNormal(r.mu, r.sigma), r.min), r.max);
+    if (r.round) val = Math.round(val / r.round) * r.round;
+    return parseFloat(val.toFixed(r.dp));
+}
+
+// Realistic fee history with correlated gas-price walk
+function realisticFeeHistory(token) {
+    const count = 3 + Math.floor(Math.random() * 5);
+    const isEVM = ['ETH', 'USDC', 'USDT', 'DAI', 'MATIC', 'LINK', 'BNB'].includes(token);
+    const baseFee = isEVM
+        ? 0.0004 + Math.random() * 0.004
+        : token === 'BTC' ? 0.000005 + Math.random() * 0.00015
+        : 0.00005 + Math.random() * 0.0005;
+
+    const fees = [];
+    let fee = baseFee;
+    for (let i = 0; i < count; i++) {
+        fee = Math.max(fee * (0.65 + Math.random() * 0.7), baseFee * 0.3);
+        fees.push(parseFloat(fee.toFixed(8)));
+    }
+    return fees;
+}
+
+function pickAddress(preferHub) {
+    if (addressPool.length < 3) {
+        const addr = '0x' + randomHex(40);
+        addressPool.push(addr);
+        return addr;
+    }
+    const hubCut = Math.max(2, Math.floor(addressPool.length * HUB_POOL_FRACTION));
+    if (preferHub && Math.random() < 0.5) {
+        return addressPool[Math.floor(Math.random() * hubCut)];
+    }
+    // Power-law: slightly bias toward lower indices (more active wallets)
+    const idx = Math.floor(Math.pow(Math.random(), 1.8) * addressPool.length);
+    return addressPool[Math.min(idx, addressPool.length - 1)];
+}
+
+function createRandomTransaction(overrides) {
+    let from = overrides && overrides.from ? overrides.from : pickAddress(Math.random() < 0.2);
+    let to   = overrides && overrides.to   ? overrides.to   : pickAddress(Math.random() < 0.3);
+    if (from === to) to = '0x' + randomHex(40);
+
+    if (!addressPool.includes(from)) addressPool.push(from);
+    if (!addressPool.includes(to))   addressPool.push(to);
+
+    const token = (overrides && overrides.token) ? overrides.token : weightedToken();
+    const amount = (overrides && overrides.amount != null) ? overrides.amount : realisticAmount(token);
+    const feeHistory = realisticFeeHistory(token);
 
     return {
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [0, 0] },
         properties: {
             txHash: '0x' + randomHex(64),
-            from,
-            to,
-            token,
-            amount,
-            feeHistory,
+            from, to, token, amount, feeHistory,
             timestamp: Date.now() - Math.floor(Math.random() * 86400000 * 7)
         }
     };
@@ -267,7 +326,6 @@ function buildNetwork() {
 
     createNodeMeshes();
     createLinkLines();
-    updateTimelineLabels();
     detectAnomalies();
 }
 
@@ -352,30 +410,72 @@ function syncPositions() {
 // ============================================================================
 
 function startGeneratingTransactions() {
-    console.log('%c⚡ Auto-generating new transactions every 3s', 'color: #f59e0b; font-size: 12px;');
-    generateInterval = setInterval(() => {
-        const count = 1 + Math.floor(Math.random() * 3); // 1-3 per tick
-        for (let i = 0; i < count; i++) {
-            const tx = createRandomTransaction();
-            tx.properties.timestamp = Date.now();
-            allTransactions.push(tx);
-            // Only add to filtered if timeline slider is at max
-            const slider = document.getElementById('timelineRange');
-            if (slider && parseInt(slider.value, 10) >= 100) {
-                filteredTransactions.push(tx);
-                addSingleTransaction(tx.properties);
+    console.log('%c⚡ Auto-generating live transactions', 'color: #f59e0b; font-size: 12px;');
+    let burstCooldown = 0;
+
+    function tick() {
+        // Occasionally inject realistic anomaly patterns
+        const roll = Math.random();
+        if (roll < 0.06 && addressPool.length > 5) {
+            injectFanOutBurst();
+        } else if (roll < 0.10 && addressPool.length > 5) {
+            injectSmurfingCluster();
+        } else {
+            const count = Math.random() < 0.2 ? 3 + Math.floor(Math.random() * 4) : 1 + Math.floor(Math.random() * 2);
+            for (let i = 0; i < count; i++) {
+                const tx = createRandomTransaction();
+                tx.properties.timestamp = Date.now() - Math.floor(Math.random() * 3000);
+                pushLiveTx(tx);
             }
         }
-        // Cap at 300 to avoid slowdown
-        while (allTransactions.length > 300) {
-            allTransactions.shift();
-        }
-        while (filteredTransactions.length > 300) {
-            filteredTransactions.shift();
-        }
-        // Keep timeline labels current
-        updateTimelineLabels();
-    }, 3000);
+
+        // Variable interval: mostly 1.5-4s, occasional bursts at 300ms
+        const nextDelay = burstCooldown > 0
+            ? (burstCooldown--, 300)
+            : Math.floor(1500 + Math.random() * 2500);
+
+        generateInterval = setTimeout(tick, nextDelay);
+    }
+
+    generateInterval = setTimeout(tick, 2000);
+}
+
+function pushLiveTx(tx) {
+    allTransactions.push(tx);
+    filteredTransactions.push(tx);
+    addSingleTransaction(tx.properties);
+    while (allTransactions.length > 400) allTransactions.shift();
+    while (filteredTransactions.length > 400) filteredTransactions.shift();
+}
+
+// Fan-out: one hub wallet rapidly distributes to many new addresses
+function injectFanOutBurst() {
+    const hub = addressPool[Math.floor(Math.random() * Math.max(1, Math.floor(addressPool.length * HUB_POOL_FRACTION)))];
+    const token = weightedToken();
+    const baseAmount = realisticAmount(token);
+    const count = 6 + Math.floor(Math.random() * 6);
+    for (let i = 0; i < count; i++) {
+        const to = '0x' + randomHex(40);
+        addressPool.push(to);
+        const tx = createRandomTransaction({ from: hub, to, token, amount: parseFloat((baseAmount * (0.9 + Math.random() * 0.2)).toFixed(4)) });
+        tx.properties.timestamp = Date.now() - Math.floor(Math.random() * 30000);
+        pushLiveTx(tx);
+    }
+}
+
+// Smurfing: one address breaks a large amount into many small same-token sends to the same destination
+function injectSmurfingCluster() {
+    const from = addressPool[Math.floor(Math.random() * addressPool.length)];
+    const to = addressPool[Math.floor(Math.random() * addressPool.length)] || '0x' + randomHex(40);
+    if (!addressPool.includes(to)) addressPool.push(to);
+    const token = weightedToken();
+    const chunk = realisticAmount(token);
+    const count = 4 + Math.floor(Math.random() * 5);
+    for (let i = 0; i < count; i++) {
+        const tx = createRandomTransaction({ from, to: i % 3 === 0 ? '0x' + randomHex(40) : to, token, amount: parseFloat((chunk * (0.95 + Math.random() * 0.1)).toFixed(4)) });
+        tx.properties.timestamp = Date.now() - Math.floor(Math.random() * 60000);
+        pushLiveTx(tx);
+    }
 }
 
 function addSingleTransaction(tx) {
@@ -681,7 +781,7 @@ function renderFeeChart(feeHistory) {
 }
 
 // ============================================================================
-// Search & Timeline
+// Search
 // ============================================================================
 
 function handleSearch(term) {
@@ -698,57 +798,6 @@ function handleSearch(term) {
     buildNetwork();
 }
 
-function formatShortDateTime(ts) {
-    const d = new Date(ts);
-    const mon = d.toLocaleString('en-US', { month: 'short' });
-    const day = d.getDate();
-    const h = d.getHours().toString().padStart(2, '0');
-    const m = d.getMinutes().toString().padStart(2, '0');
-    return `${mon} ${day}, ${h}:${m}`;
-}
-
-function handleTimelineChange(val) {
-    if (allTransactions.length === 0) return;
-    const sorted = [...allTransactions].sort((a, b) => a.properties.timestamp - b.properties.timestamp);
-    const minT = sorted[0].properties.timestamp;
-    const maxT = sorted[sorted.length - 1].properties.timestamp;
-
-    if (val >= 100) {
-        // Show everything
-        filteredTransactions = [...allTransactions];
-    } else {
-        const cutoff = minT + (maxT - minT) * (val / 100);
-        filteredTransactions = allTransactions.filter(tx => tx.properties.timestamp <= cutoff);
-        // Update current position label
-        const curEl = document.getElementById('timelineCurrent');
-        if (curEl) curEl.textContent = '— ' + formatShortDateTime(cutoff);
-    }
-
-    // Update count
-    const countEl = document.getElementById('timelineCount');
-    if (countEl) countEl.textContent = `Showing ${filteredTransactions.length} of ${allTransactions.length} transactions`;
-
-    if (val >= 100) {
-        const curEl = document.getElementById('timelineCurrent');
-        if (curEl) curEl.textContent = '— All';
-    }
-
-    buildNetwork();
-}
-
-function updateTimelineLabels() {
-    if (allTransactions.length === 0) return;
-    const sorted = [...allTransactions].sort((a, b) => a.properties.timestamp - b.properties.timestamp);
-    const startEl = document.getElementById('timelineStart');
-    const endEl = document.getElementById('timelineEnd');
-    const countEl = document.getElementById('timelineCount');
-    const curEl = document.getElementById('timelineCurrent');
-    if (startEl) startEl.textContent = formatShortDateTime(sorted[0].properties.timestamp);
-    if (endEl) endEl.textContent = formatShortDateTime(sorted[sorted.length - 1].properties.timestamp);
-    if (countEl) countEl.textContent = `Showing ${filteredTransactions.length} of ${allTransactions.length} transactions`;
-    if (curEl) curEl.textContent = '— All';
-}
-
 // ============================================================================
 // Event Listeners
 // ============================================================================
@@ -760,10 +809,6 @@ function setupEventListeners() {
     const closeAnomalyBtn = document.getElementById('closeAnomalyPanel');
     if (closeAnomalyBtn) closeAnomalyBtn.addEventListener('click', toggleAnomalyPanel);
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTransactionPanel(); });
-
-    document.getElementById('timelineRange').addEventListener('input', e => {
-        handleTimelineChange(parseInt(e.target.value, 10));
-    });
 
     document.getElementById('rotateBtn').addEventListener('click', () => {
         autoRotate = !autoRotate;
@@ -821,89 +866,143 @@ function detectAnomalies() {
     anomalyAlerts = [];
     if (allTransactions.length === 0) { updateAnomalyUI(); return; }
 
-    // Compute mean & std dev of amounts for outlier detection
-    const amounts = allTransactions.map(tx => tx.properties.amount);
-    const mean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
-    const variance = amounts.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / amounts.length;
-    const stdDev = Math.sqrt(variance);
-    const outlierThreshold = mean + 2 * stdDev;
+    // ── Per-token amount stats for outlier detection (compare within same token) ──
+    const tokenAmounts = new Map();
+    allTransactions.forEach(tx => {
+        const { token, amount } = tx.properties;
+        if (!tokenAmounts.has(token)) tokenAmounts.set(token, []);
+        tokenAmounts.get(token).push(amount);
+    });
+    const tokenStats = new Map();
+    tokenAmounts.forEach((amounts, token) => {
+        const n = amounts.length;
+        const mean = amounts.reduce((a, b) => a + b, 0) / n;
+        const std = Math.sqrt(amounts.reduce((a, b) => a + (b - mean) ** 2, 0) / n);
+        tokenStats.set(token, { mean, threshold: mean + 2.5 * std });
+    });
 
-    // Build per-address stats
-    const addressStats = new Map();
-    const addressTimestamps = new Map(); // for rapid-fire detection
+    // ── Per-address stat collection ──
+    const stats = new Map();    // addr → { sentTo, receivedFrom, sentAmounts, timestamps, totalSent, totalReceived }
+    const pairAmounts = new Map(); // "from→to" → [amounts]  (structuring detection)
 
     allTransactions.forEach(tx => {
         const p = tx.properties;
-        [p.from, p.to].forEach(addr => {
-            if (!addressStats.has(addr)) {
-                addressStats.set(addr, { txCount: 0, sentCount: 0, receivedCount: 0, totalAmount: 0, partners: new Set() });
-            }
-            const s = addressStats.get(addr);
-            s.txCount++;
-            s.totalAmount += p.amount;
-        });
-        addressStats.get(p.from).sentCount++;
-        addressStats.get(p.to).receivedCount++;
-        addressStats.get(p.from).partners.add(p.to);
-        addressStats.get(p.to).partners.add(p.from);
+        const ensureAddr = addr => {
+            if (!stats.has(addr)) stats.set(addr, {
+                sentTo: new Set(), receivedFrom: new Set(),
+                sentAmounts: [], recvAmounts: [],
+                timestamps: [], totalSent: 0, totalReceived: 0
+            });
+        };
+        ensureAddr(p.from); ensureAddr(p.to);
 
-        if (!addressTimestamps.has(p.from)) addressTimestamps.set(p.from, []);
-        addressTimestamps.get(p.from).push(p.timestamp);
+        const sf = stats.get(p.from), st = stats.get(p.to);
+        sf.sentTo.add(p.to);
+        sf.sentAmounts.push(p.amount);
+        sf.timestamps.push(p.timestamp);
+        sf.totalSent += p.amount;
+        st.receivedFrom.add(p.from);
+        st.recvAmounts.push(p.amount);
+        st.totalReceived += p.amount;
+
+        const key = p.from + '→' + p.to;
+        if (!pairAmounts.has(key)) pairAmounts.set(key, []);
+        pairAmounts.get(key).push(p.amount);
     });
 
-    // Build tx-pair set for circular trading detection
-    const txPairs = new Set();
-    allTransactions.forEach(tx => txPairs.add(tx.properties.from + '→' + tx.properties.to));
+    // Pair set for circular detection
+    const txPairs = new Set(allTransactions.map(tx => tx.properties.from + '→' + tx.properties.to));
 
-    // Score each address
-    addressStats.forEach((stats, addr) => {
+    // Network-wide tx count percentiles (bot threshold relative to dataset)
+    const allCounts = Array.from(stats.values()).map(s => s.sentTo.size + s.receivedFrom.size);
+    allCounts.sort((a, b) => a - b);
+    const p90 = allCounts[Math.floor(allCounts.length * 0.9)] || 5;
+    const p75 = allCounts[Math.floor(allCounts.length * 0.75)] || 3;
+
+    stats.forEach((s, addr) => {
         let score = 0;
         const flags = [];
+        const txCount = s.sentAmounts.length + s.recvAmounts.length;
 
-        // Rule 1: High-frequency (bot-like behaviour)
-        if (stats.txCount >= 10) {
-            score += 35; flags.push('Bot-like activity: ' + stats.txCount + ' transactions');
-        } else if (stats.txCount >= 6) {
-            score += 20; flags.push('Elevated activity: ' + stats.txCount + ' transactions');
+        // ── Rule 1: Fan-out (distribution to many unique wallets) ──
+        if (s.sentTo.size >= 10) {
+            score += 40; flags.push(`Fan-out: sent to ${s.sentTo.size} unique wallets`);
+        } else if (s.sentTo.size >= 6) {
+            score += 22; flags.push(`Elevated fan-out: ${s.sentTo.size} unique recipients`);
         }
 
-        // Rule 2: Circular / wash trading (A→B AND B→A)
+        // ── Rule 2: Fan-in (aggregation from many unique wallets) ──
+        if (s.receivedFrom.size >= 10) {
+            score += 35; flags.push(`Fan-in: received from ${s.receivedFrom.size} unique wallets (mixer/aggregator)`);
+        } else if (s.receivedFrom.size >= 6) {
+            score += 18; flags.push(`Elevated fan-in: ${s.receivedFrom.size} unique senders`);
+        }
+
+        // ── Rule 3: Circular / wash trading (A→B AND B→A) ──
         let circularCount = 0;
-        stats.partners.forEach(partner => {
+        s.sentTo.forEach(partner => {
             if (txPairs.has(addr + '→' + partner) && txPairs.has(partner + '→' + addr)) circularCount++;
         });
-        if (circularCount > 0) {
-            score += 30;
-            flags.push('Circular trading with ' + circularCount + ' wallet' + (circularCount > 1 ? 's' : ''));
+        if (circularCount >= 2) {
+            score += 35; flags.push(`Wash trading: circular flows with ${circularCount} wallets`);
+        } else if (circularCount === 1) {
+            score += 20; flags.push('Circular transaction pair detected');
         }
 
-        // Rule 3: Rapid-fire transactions (multiple sends within 60 s)
-        const timestamps = addressTimestamps.get(addr) || [];
-        if (timestamps.length >= 2) {
-            const sorted = [...timestamps].sort((a, b) => a - b);
-            let rapidCount = 0;
-            for (let i = 1; i < sorted.length; i++) {
-                if (sorted[i] - sorted[i - 1] < 60000) rapidCount++;
+        // ── Rule 4: Rapid-fire sends (≥3 sends within 2 minutes) ──
+        if (s.timestamps.length >= 3) {
+            const sorted = [...s.timestamps].sort((a, b) => a - b);
+            let burstCount = 0;
+            for (let i = 2; i < sorted.length; i++) {
+                if (sorted[i] - sorted[i - 2] < 120000) burstCount++;
             }
-            if (rapidCount >= 2) { score += 20; flags.push('Rapid-fire sends detected'); }
+            if (burstCount >= 2) { score += 25; flags.push('Rapid-fire transactions (burst pattern)'); }
+            else if (burstCount === 1) { score += 12; flags.push('Elevated transaction velocity'); }
+        }
+
+        // ── Rule 5: Structuring — same pair, similar amounts, many times ──
+        s.sentTo.forEach(dest => {
+            const amounts = pairAmounts.get(addr + '→' + dest) || [];
+            if (amounts.length >= 4) {
+                const mn = amounts.reduce((a, b) => a + b, 0) / amounts.length;
+                const devs = amounts.map(a => Math.abs(a - mn) / (mn || 1));
+                const avgDev = devs.reduce((a, b) => a + b, 0) / devs.length;
+                if (avgDev < 0.12) {
+                    score += 30;
+                    flags.push(`Structuring: ${amounts.length} near-identical sends to same wallet`);
+                }
+            }
+        });
+
+        // ── Rule 6: High velocity — large total value moved in dataset window ──
+        const velocityScore = s.totalSent / (tokenStats.get('ETH')?.mean || 1);
+        if (velocityScore > 500 && s.sentAmounts.length >= 5) {
+            score += 20; flags.push(`High value velocity: ${s.totalSent.toFixed(2)} total sent`);
+        }
+
+        // ── Rule 7: Bot-like (top 10% tx count in network) ──
+        if (txCount >= p90 && txCount >= 8) {
+            score += 18; flags.push(`Bot-like frequency: ${txCount} txs (top 10% in network)`);
+        } else if (txCount >= p75 && txCount >= 5) {
+            score += 8; flags.push(`Elevated activity: ${txCount} transactions`);
         }
 
         anomalyScores.set(addr, { score: Math.min(score, 100), flags });
     });
 
-    // Rule 4: Outlier transaction amounts — add to sender's score
+    // ── Rule 8: Token-specific outlier amounts — boost sender score ──
     allTransactions.forEach(tx => {
         const p = tx.properties;
-        if (p.amount > outlierThreshold) {
+        const ts = tokenStats.get(p.token);
+        if (ts && p.amount > ts.threshold) {
             const d = anomalyScores.get(p.from);
             if (d) {
-                d.score = Math.min(d.score + 25, 100);
-                d.flags.push('Outlier transfer: ' + p.amount.toFixed(2) + ' ' + p.token + ' (avg ' + mean.toFixed(2) + ')');
+                d.score = Math.min(d.score + 20, 100);
+                d.flags.push(`Outlier ${p.token} transfer: ${p.amount} (network avg ${ts.mean.toFixed(4)})`);
             }
         }
     });
 
-    // Build sorted alert list (top 10 flagged)
     anomalyAlerts = Array.from(anomalyScores.entries())
         .filter(([, d]) => d.score >= 20)
         .sort(([, a], [, b]) => b.score - a.score)

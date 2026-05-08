@@ -389,83 +389,6 @@ body {
     border-radius: 8px;
 }
 
-/* Timeline Container */
-.timeline-container {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    padding: 15px 25px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    min-width: 300px;
-}
-
-.timeline-container label {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-#timelineRange {
-    width: 100%;
-    height: 6px;
-    border-radius: 3px;
-    background: #e5e7eb;
-    outline: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-}
-
-#timelineRange::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #3b82f6;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-#timelineRange::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #3b82f6;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.timeline-labels {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
-    font-size: 11px;
-    color: #666;
-}
-
-.timeline-current {
-    font-weight: 400;
-    color: #3b82f6;
-    font-size: 11px;
-    margin-left: 6px;
-}
-
-.timeline-stats {
-    text-align: center;
-    margin-top: 4px;
-    font-size: 11px;
-    color: #888;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .controls-header {
@@ -487,12 +410,6 @@ body {
         right: -100%;
     }
 
-    .timeline-container {
-        left: 10px;
-        right: 10px;
-        transform: none;
-        min-width: auto;
-    }
 }
 
 @media (max-width: 480px) {
@@ -502,10 +419,7 @@ body {
         right: 5px;
     }
 
-    .timeline-container {
-        bottom: 10px;
-        padding: 10px 15px;
-    }
+
 
     #panelContent h2 {
         font-size: 20px;
